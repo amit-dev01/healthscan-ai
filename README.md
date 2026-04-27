@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HealthScan AI 🏥
+
+An autonomous medical report analyzer powered by Google Gemini 2.0 Flash Lite.
+
+## Features
+- **Intelligent Extraction**: Uses Gemini Vision to parse blood reports, MRI/CT scans, X-rays, and prescriptions.
+- **Deep Analysis**: Provides detailed insights into medical findings with an urgency assessment.
+- **Emergency Detection**: Real-time checking for critical health values.
+- **Clinic Finder**: Integrated with Google Places API to find specialists in your city.
+- **WhatsApp Integration**: Sends reports directly to your phone via Twilio.
 
 ## Getting Started
 
-First, run the development server:
+1. **Setup Environment**:
+   Create a `.env.local` file:
+   ```env
+   GEMINI_API_KEY=AIzaSyCctS7GocKEHqSUm6rEZnZHLtHwZPVL3T4
+   GOOGLE_PLACES_API_KEY=your_key
+   TWILIO_ACCOUNT_SID=your_sid
+   TWILIO_AUTH_TOKEN=your_token
+   TWILIO_WHATSAPP_FROM=your_number
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Tech Stack
+- Next.js 14
+- Tailwind CSS
+- Framer Motion
+- Google Gemini API (Function Calling)
+- Google Places API
+- Twilio API
