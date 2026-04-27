@@ -435,7 +435,8 @@ const translations: Record<Language, Translations> = { English: en, Hindi: hi, B
 
 interface LanguageContextType {
   language: Language;
-  setLanguage: (l: Language) => void;
+  // eslint-disable-next-line no-unused-vars
+  setLanguage: (lang: Language) => void;
   t: Translations;
 }
 
