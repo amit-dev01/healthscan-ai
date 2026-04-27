@@ -1,11 +1,13 @@
 "use client";
 
-import { MessageSquare, Send, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
+import { MessageSquare, Send, ExternalLink, Phone } from 'lucide-react';
 import type { AnalysisResult } from '@/app/page';
 
 interface Props { result: AnalysisResult }
 
 export function WhatsAppTab({ result }: Props) {
+  const [phone, setPhone] = useState('');
   const { analysis, clinics } = result;
   
   const topClinic = clinics && clinics.length > 0 ? clinics[0] : null;
@@ -36,21 +38,38 @@ ${topClinic ? `\n🏥 Nearest: ${topClinic.name}\n📍 ${topClinic.address}` : '
 
   const handleShare = () => {
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+    const cleanPhone = phone.replace(/[^0-9]/g, ''); // strip non-numeric characters
+    const url = cleanPhone 
+      ? `https://wa.me/${cleanPhone}?text=${encodedMessage}` 
+      : `https://wa.me/?text=${encodedMessage}`;
+    window.open(url, '_blank');
   };
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <h2 className="text-xl font-bold text-[#f1f5f9] flex items-center gap-2">
           <MessageSquare className="text-[#25d366]" /> Share via WhatsApp
         </h2>
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-2 bg-[#25d366] hover:bg-[#25d366]/90 text-black font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-[#25d366]/20"
-        >
-          <Send size={16} /> Send Report
-        </button>
+        
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
+            <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="+91 Phone Number (Optional)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full bg-black/40 border border-[#2a2d3e] rounded-xl py-2.5 pl-9 pr-4 text-sm text-[#f1f5f9] placeholder-gray-500 focus:outline-none focus:border-[#25d366] transition-colors"
+            />
+          </div>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 bg-[#25d366] hover:bg-[#25d366]/90 text-black font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-[#25d366]/20 whitespace-nowrap"
+          >
+            <Send size={16} /> Send Report
+          </button>
+        </div>
       </div>
 
       <div className="bg-[#25d366]/10 border border-[#25d366]/20 rounded-xl p-5 flex items-start gap-4">
