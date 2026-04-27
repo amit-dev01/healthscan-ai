@@ -473,7 +473,6 @@ Rules:
       report: finalReport,
       clinics,
       pharmacy,
-      pharmacy,
     });
 
   } catch (error: unknown) {
