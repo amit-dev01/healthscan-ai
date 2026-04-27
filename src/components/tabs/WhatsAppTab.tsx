@@ -16,7 +16,7 @@ export function WhatsAppTab({ result, patientInfo }: Props) {
   const topClinic = clinics && clinics.length > 0 ? clinics[0] : null;
   const kf = (analysis.keyFindings as Array<Record<string, string>>) || [];
   const ap = (analysis.actionPlan as Record<string, string[]>) || {};
-  const dv = (analysis.doctorVisitGuide as Record<string, string>) || {};
+  const dv = (analysis.doctorVisitGuide as Record<string, unknown>) || {};
 
   const message = `🏥 *HealthScan AI Report*
 📅 Date: ${new Date().toLocaleDateString('en-IN')}
