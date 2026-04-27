@@ -57,7 +57,7 @@ export function ResultTabs({ result, preview, patientInfo }: Props) {
         {activeTab === 'images'   && <ImagesTab result={result} preview={preview} />}
         {activeTab === 'cost'     && <CostTab result={result} />}
         {activeTab === 'clinics'  && <ClinicsTab result={result} city={patientInfo.city} />}
-        {activeTab === 'whatsapp' && <WhatsAppTab result={result} />}
+        {activeTab === 'whatsapp' && <WhatsAppTab result={result} patientInfo={patientInfo} />}
       </div>
     </div>
   );

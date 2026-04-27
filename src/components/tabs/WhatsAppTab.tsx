@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { MessageSquare, Send, ExternalLink, Phone } from 'lucide-react';
 import type { AnalysisResult } from '@/app/page';
 
-interface Props { result: AnalysisResult }
+interface Props { 
+  result: AnalysisResult;
+  patientInfo?: { whatsapp?: string };
+}
 
-export function WhatsAppTab({ result }: Props) {
-  const [phone, setPhone] = useState('');
+export function WhatsAppTab({ result, patientInfo }: Props) {
+  const [phone, setPhone] = useState(patientInfo?.whatsapp || '');
   const { analysis, clinics } = result;
   
   const topClinic = clinics && clinics.length > 0 ? clinics[0] : null;
