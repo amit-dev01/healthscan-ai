@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from "@google/genai";
-import twilio from 'twilio';
 
 // Initialize Gemini with new SDK
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
-
-const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
 
 // Helper to robustly extract JSON from model output
 // Handles: bare JSON, ```json...```, ``` ... ```, extra commentary, etc.
@@ -464,55 +458,8 @@ Rules:
     }
 
     // ==========================================================
-    // STAGE 5: WHATSAPP
+    // STAGE 5: WHATSAPP (Removed — now handled client-side)
     // ==========================================================
-    const whatsappStatus: { number: string; sent: boolean; error?: string }[] = [];
-
-    if (whatsapp && process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      const numbers = whatsapp.split(',').map((n: string) => n.trim()).filter(Boolean);
-      const fromNumber = process.env.TWILIO_WHATSAPP_FROM?.startsWith('whatsapp:')
-        ? process.env.TWILIO_WHATSAPP_FROM
-        : `whatsapp:${process.env.TWILIO_WHATSAPP_FROM}`;
-
-      const kf = (analysis.keyFindings as Array<Record<string, string>>) || [];
-      const ap = (analysis.actionPlan as Record<string, string[]>) || {};
-      const dv = (analysis.doctorVisitGuide as Record<string, string>) || {};
-      const topClinic = clinics[0] as Record<string, string> | undefined;
-
-      const message = `🏥 *HealthScan AI Report*
-👤 Patient: ${name} (${age}yo ${gender})
-📅 Date: ${new Date().toLocaleDateString('en-IN')}
-
-📊 *Health Score: ${analysis.healthScore}/10*
-⚠️ *Urgency: ${analysis.urgency}*
-
-📋 *Summary:*
-${analysis.executiveSummary || ''}
-
-🔍 *Key Findings:*
-${kf.slice(0, 3).map(f => `• ${f.name}: ${f.what}`).join('\n')}
-
-✅ *Do Today:*
-${(ap.today || []).slice(0, 3).map((a: string) => `• ${a}`).join('\n')}
-
-👨‍⚕️ *See: ${dv.specialist}* (${dv.urgency})
-${topClinic ? `\n🏥 Nearest: ${topClinic.name}\n📍 ${topClinic.address}` : ''}
-
-🚨 *Emergency: Call 108 (Free Ambulance)*
-⚠️ _AI-generated report. Always consult a doctor._`;
-
-      for (const num of numbers) {
-        try {
-          const toNumber = num.startsWith('whatsapp:') ? num : `whatsapp:${num}`;
-          await twilioClient.messages.create({ from: fromNumber, to: toNumber, body: message });
-          whatsappStatus.push({ number: num, sent: true });
-        } catch (e: unknown) {
-          const msg = e instanceof Error ? e.message : String(e);
-          console.error("Twilio error:", msg);
-          whatsappStatus.push({ number: num, sent: false, error: msg });
-        }
-      }
-    }
 
     // Return full structured response
     return NextResponse.json({
@@ -526,7 +473,7 @@ ${topClinic ? `\n🏥 Nearest: ${topClinic.name}\n📍 ${topClinic.address}` : '
       report: finalReport,
       clinics,
       pharmacy,
-      whatsappStatus,
+      pharmacy,
     });
 
   } catch (error: unknown) {

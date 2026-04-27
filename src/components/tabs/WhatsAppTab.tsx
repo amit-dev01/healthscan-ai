@@ -1,88 +1,77 @@
 "use client";
 
-import { CheckCircle2, XCircle, MessageSquare, RefreshCw } from 'lucide-react';
+import { MessageSquare, Send, ExternalLink } from 'lucide-react';
 import type { AnalysisResult } from '@/app/page';
 
 interface Props { result: AnalysisResult }
 
 export function WhatsAppTab({ result }: Props) {
-  const statuses = result.whatsappStatus || [];
-  const sent = statuses.filter(s => s.sent).length;
-  const failed = statuses.filter(s => !s.sent).length;
+  const { analysis, clinics } = result;
+  
+  const topClinic = clinics && clinics.length > 0 ? clinics[0] : null;
+  const kf = (analysis.keyFindings as Array<Record<string, string>>) || [];
+  const ap = (analysis.actionPlan as Record<string, string[]>) || {};
+  const dv = (analysis.doctorVisitGuide as Record<string, string>) || {};
+
+  const message = `🏥 *HealthScan AI Report*
+📅 Date: ${new Date().toLocaleDateString('en-IN')}
+
+📊 *Health Score: ${analysis.healthScore}/10*
+⚠️ *Urgency: ${analysis.urgency}*
+
+📋 *Summary:*
+${analysis.executiveSummary || ''}
+
+🔍 *Key Findings:*
+${kf.slice(0, 3).map(f => `• ${f.name}: ${f.what}`).join('\n')}
+
+✅ *Action Plan:*
+${(ap.today || []).slice(0, 3).map((a: string) => `• ${a}`).join('\n')}
+
+👨‍⚕️ *See: ${dv.specialist}* (${dv.urgency})
+${topClinic ? `\n🏥 Nearest: ${topClinic.name}\n📍 ${topClinic.address}` : ''}
+
+🚨 *Emergency: Call 108 (Free Ambulance)*
+⚠️ _AI-generated report. Always consult a doctor._`;
+
+  const handleShare = () => {
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+  };
 
   return (
     <div className="p-6 space-y-6">
-      <h2 className="text-xl font-bold text-[#f1f5f9] flex items-center gap-2">
-        <MessageSquare className="text-[#16a34a]" /> WhatsApp Delivery
-      </h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-[#f1f5f9] flex items-center gap-2">
+          <MessageSquare className="text-[#25d366]" /> Share via WhatsApp
+        </h2>
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 bg-[#25d366] hover:bg-[#25d366]/90 text-black font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-[#25d366]/20"
+        >
+          <Send size={16} /> Send Report
+        </button>
+      </div>
 
-      {statuses.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <MessageSquare size={40} className="mx-auto mb-3 opacity-30" />
-          <p>No WhatsApp numbers were provided.</p>
-          <p className="text-xs mt-1">Enter number(s) in the patient form and re-run analysis.</p>
+      <div className="bg-[#25d366]/10 border border-[#25d366]/20 rounded-xl p-5 flex items-start gap-4">
+        <div className="w-10 h-10 rounded-full bg-[#25d366]/20 flex items-center justify-center flex-shrink-0 mt-1">
+          <ExternalLink size={20} className="text-[#25d366]" />
         </div>
-      ) : (
-        <>
-          {/* Summary */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-[#16a34a]/10 border border-[#16a34a]/20 rounded-xl p-5 text-center">
-              <p className="text-3xl font-black text-[#16a34a]">{sent}</p>
-              <p className="text-sm text-gray-400 mt-1">Sent Successfully</p>
-            </div>
-            <div className="bg-[#dc2626]/10 border border-[#dc2626]/20 rounded-xl p-5 text-center">
-              <p className="text-3xl font-black text-[#dc2626]">{failed}</p>
-              <p className="text-sm text-gray-400 mt-1">Failed</p>
-            </div>
-          </div>
-
-          {/* Per-number status */}
-          <div className="space-y-3">
-            {statuses.map((s, i) => (
-              <div key={i} className={`flex items-center gap-4 p-4 rounded-xl border ${s.sent ? 'border-[#16a34a]/20 bg-[#16a34a]/5' : 'border-[#dc2626]/20 bg-[#dc2626]/5'}`}>
-                {s.sent
-                  ? <CheckCircle2 size={20} className="text-[#16a34a] flex-shrink-0" />
-                  : <XCircle size={20} className="text-[#dc2626] flex-shrink-0" />
-                }
-                <div className="flex-1">
-                  <p className="font-semibold text-[#f1f5f9] text-sm">{s.number}</p>
-                  {s.error && <p className="text-xs text-[#dc2626] mt-0.5">{s.error}</p>}
-                </div>
-                <span className={`text-xs font-bold ${s.sent ? 'text-[#16a34a]' : 'text-[#dc2626]'}`}>
-                  {s.sent ? 'DELIVERED' : 'FAILED'}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {failed > 0 && (
-            <div className="text-xs text-gray-400 bg-black/20 border border-[#2a2d3e] rounded-lg p-4">
-              <p className="font-semibold text-[#f1f5f9] mb-1">Troubleshooting WhatsApp delivery:</p>
-              <ul className="space-y-1 list-disc ml-4">
-                <li>Ensure the number has joined your Twilio Sandbox (send &quot;join &lt;sandbox&gt;&quot; to +1 415 523 8886)</li>
-                <li>Verify TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are correct in .env.local</li>
-                <li>Check that TWILIO_WHATSAPP_FROM is set to your sandbox number</li>
-              </ul>
-            </div>
-          )}
-        </>
-      )}
+        <div>
+          <h3 className="font-bold text-[#f1f5f9] text-sm mb-1">Direct Sharing</h3>
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Clicking the button above will open WhatsApp (Web or Mobile) and allow you to select a contact to share this summary with. You don't need to configure any APIs.
+          </p>
+        </div>
+      </div>
 
       {/* Message preview */}
       <div className="bg-black/20 border border-[#2a2d3e] rounded-xl p-5">
         <p className="text-xs font-semibold text-gray-400 mb-3 flex items-center gap-2">
-          <RefreshCw size={12} /> Message Preview
+          Message Preview
         </p>
-        <div className="bg-[#16a34a]/5 border border-[#16a34a]/10 rounded-lg p-4 font-mono text-xs text-gray-300 whitespace-pre-line leading-relaxed">
-{`🏥 HealthScan AI Report
-Health Score: ${result.analysis?.healthScore}/10
-Urgency: ${result.analysis?.urgency}
-
-${result.analysis?.executiveSummary?.substring(0, 200) || ''}...
-
-👨‍⚕️ See: ${result.analysis?.specialistNeeded}
-🚨 Emergency: Call 108
-⚠️ AI-generated. Consult a doctor.`}
+        <div className="bg-[#25d366]/5 border border-[#25d366]/10 rounded-lg p-5 font-mono text-sm text-gray-300 whitespace-pre-line leading-relaxed selection:bg-[#25d366]/30">
+          {message}
         </div>
       </div>
     </div>
