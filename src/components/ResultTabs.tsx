@@ -14,7 +14,7 @@ import { useLanguage } from './LanguageContext';
 interface Props {
   result: AnalysisResult;
   preview: string | null;
-  patientInfo: { name: string; age: string; gender: string; city: string };
+  patientInfo: { name: string; age: string; gender: string; city: string; whatsapp?: string };
 }
 
 export function ResultTabs({ result, preview, patientInfo }: Props) {
