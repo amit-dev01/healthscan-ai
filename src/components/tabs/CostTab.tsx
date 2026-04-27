@@ -33,7 +33,7 @@ function CostRow({ item, color }: { item: CostItem; color: string }) {
   );
 }
 
-type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
+type LucideIcon = React.ElementType;
 
 function Section({
   title, icon: Icon, items, color, emptyMsg
