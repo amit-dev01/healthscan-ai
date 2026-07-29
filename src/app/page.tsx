@@ -94,25 +94,28 @@ function LanguageSwitcher() {
     { code: 'Bengali', flag: '🇧🇩', label: 'বাং' },
   ];
   return (
-    <div className="flex items-center gap-1 bg-black/30 rounded-full px-2 py-1 border border-[#2a2d3e]">
-      <span className="text-xs text-gray-500 mr-1">{t.selectLanguage}:</span>
-      {LANGS.map(({ code, flag, label }) => (
-        <button
-          key={code}
-          onClick={() => setLanguage(code)}
-          title={code}
-          className={`px-2 py-1 rounded-full text-xs font-bold transition-all ${
-            language === code
-              ? 'bg-[#2563eb] text-white shadow-lg shadow-[#2563eb]/30'
-              : 'text-gray-400 hover:text-white hover:bg-white/5'
-          }`}
-        >
-          {flag} {label}
-        </button>
-      ))}
+    <div className="flex items-center gap-2 p-1 border border-border bg-card font-mono text-xs">
+      <span className="text-mutedForeground px-1 font-bold uppercase tracking-wider">{t.selectLanguage}:</span>
+      <div className="flex items-center gap-1">
+        {LANGS.map(({ code, flag, label }) => (
+          <button
+            key={code}
+            onClick={() => setLanguage(code)}
+            title={code}
+            className={`px-2.5 py-1.5 font-bold transition-colors duration-100 ${
+              language === code
+                ? 'bg-foreground text-background'
+                : 'text-foreground hover:bg-muted border border-transparent'
+            }`}
+          >
+            {flag} {label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
+
 
 // Inner page that consumes context
 function HealthScanInner() {
@@ -215,7 +218,7 @@ function HealthScanInner() {
   };
 
   return (
-    <main className="min-h-screen pb-20">
+    <main className="min-h-screen pb-32 bg-background text-foreground font-body">
       <Toaster position="top-right" />
 
       {/* Emergency Banner */}
@@ -224,16 +227,17 @@ function HealthScanInner() {
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
-            className="bg-[#dc2626] text-white py-3 px-6 flex items-center justify-between sticky top-0 z-[100] shadow-xl"
+            className="bg-foreground text-background py-4 px-6 flex flex-col sm:flex-row items-center justify-between sticky top-0 z-[100] border-b-4 border-foreground relative overflow-hidden"
           >
-            <div className="flex items-center gap-4">
-              <AlertCircle size={28} className="animate-pulse" />
+            <div className="absolute inset-0 texture-vertical-lines-inverted pointer-events-none" />
+            <div className="flex items-center gap-4 relative z-10">
+              <AlertCircle size={28} strokeWidth={1.5} className="animate-pulse" />
               <div>
-                <p className="font-black text-lg uppercase">{t.emergencyTitle}</p>
-                <p className="text-sm opacity-90">{result.analysis.emergencyReason || t.emergencyDefault}</p>
+                <p className="font-display font-black text-xl uppercase tracking-wider">{t.emergencyTitle}</p>
+                <p className="text-xs font-mono uppercase tracking-wide opacity-90">{result.analysis.emergencyReason || t.emergencyDefault}</p>
               </div>
             </div>
-            <a href="tel:108" className="bg-white text-[#dc2626] px-6 py-2 rounded-full font-black hover:scale-105 transition-all">
+            <a href="tel:108" className="mt-4 sm:mt-0 relative z-10 bg-background text-foreground border-2 border-foreground hover:bg-foreground hover:text-background px-6 py-2.5 font-mono text-xs uppercase tracking-widest font-black transition-colors duration-100">
               {t.callAmbulance}
             </a>
           </motion.div>
@@ -241,45 +245,54 @@ function HealthScanInner() {
       </AnimatePresence>
 
       {/* Header */}
-      <header className="py-10 px-6 text-center relative">
+      <header className="py-24 px-6 text-center relative max-w-6xl mx-auto">
         {/* Language Switcher — top right */}
         <div className="absolute top-6 right-6">
           <LanguageSwitcher />
         </div>
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#2563eb]/10 text-[#2563eb] border border-[#2563eb]/20 mb-4">
-          <Activity size={18} />
-          <span className="text-sm font-semibold tracking-wide uppercase">{t.poweredBy}</span>
+          className="inline-flex items-center gap-3 px-4 py-2 border border-foreground mb-8 bg-card">
+          <Activity size={16} strokeWidth={1.5} />
+          <span className="text-xs font-mono font-bold tracking-widest uppercase">{t.poweredBy}</span>
         </motion.div>
-        <h1 className="text-5xl font-black mb-4 tracking-tight text-[#f1f5f9]">
-          {t.title} <span className="text-[#2563eb]">AI</span>
+        
+        <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black tracking-tighter leading-none uppercase mb-6 selection:bg-foreground selection:text-background">
+          {t.title} <span className="italic block md:inline font-light text-mutedForeground">AI</span>
         </h1>
-        <p className="text-gray-400 max-w-xl mx-auto text-lg">
+        
+        <p className="font-body text-lg md:text-xl text-mutedForeground max-w-2xl mx-auto leading-relaxed">
           {t.subtitle}
         </p>
+
+        {/* Hero Decorative Divider */}
+        <div className="relative max-w-lg mx-auto mt-16 mb-20 flex justify-center items-center">
+          <div className="w-full border-t-2 border-foreground" />
+          <div className="absolute w-4 h-4 bg-foreground rotate-45 border-2 border-background" />
+        </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left: Input */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="glass-card p-6 space-y-4">
-            <h2 className="text-xl font-bold border-b border-[#2a2d3e] pb-4">{t.patientDetails}</h2>
+        <div className="lg:col-span-5 space-y-6">
+          <div className="border-2 border-foreground p-8 space-y-6 bg-card relative">
+            <h2 className="text-2xl font-display font-bold uppercase tracking-tight border-b border-borderLight pb-4 mb-2">{t.patientDetails}</h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">{t.fullName}</label>
-              <input type="text" className="w-full p-3 outline-none" placeholder={t.fullNamePlaceholder}
+              <label className="block text-xs font-mono font-bold uppercase tracking-widest text-mutedForeground mb-1">{t.fullName}</label>
+              <input type="text" className="w-full bg-background border-b-2 border-foreground py-3 px-1 text-base outline-none focus:border-b-[4px] transition-all" placeholder={t.fullNamePlaceholder}
                 value={patientInfo.name} onChange={e => setPatientInfo({ ...patientInfo, name: e.target.value })} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            
+            <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">{t.age}</label>
-                <input type="number" className="w-full p-3 outline-none" placeholder={t.agePlaceholder}
+                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-mutedForeground mb-1">{t.age}</label>
+                <input type="number" className="w-full bg-background border-b-2 border-foreground py-3 px-1 text-base outline-none focus:border-b-[4px] transition-all" placeholder={t.agePlaceholder}
                   value={patientInfo.age} onChange={e => setPatientInfo({ ...patientInfo, age: e.target.value })} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-1">{t.gender}</label>
-                <select className="w-full p-3 outline-none" value={patientInfo.gender}
+                <label className="block text-xs font-mono font-bold uppercase tracking-widest text-mutedForeground mb-1">{t.gender}</label>
+                <select className="w-full bg-background border-b-2 border-foreground py-3 px-1 text-base outline-none focus:border-b-[4px] transition-all cursor-pointer" value={patientInfo.gender}
                   onChange={e => setPatientInfo({ ...patientInfo, gender: e.target.value })}>
                   <option value="Male">{t.male}</option>
                   <option value="Female">{t.female}</option>
@@ -287,48 +300,52 @@ function HealthScanInner() {
                 </select>
               </div>
             </div>
+            
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">{t.city}</label>
-              <input type="text" className="w-full p-3 outline-none" placeholder={t.cityPlaceholder}
+              <label className="block text-xs font-mono font-bold uppercase tracking-widest text-mutedForeground mb-1">{t.city}</label>
+              <input type="text" className="w-full bg-background border-b-2 border-foreground py-3 px-1 text-base outline-none focus:border-b-[4px] transition-all" placeholder={t.cityPlaceholder}
                 value={patientInfo.city} onChange={e => setPatientInfo({ ...patientInfo, city: e.target.value })} />
             </div>
+            
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1">{t.whatsapp}</label>
-              <input type="text" className="w-full p-3 outline-none" placeholder={t.whatsappPlaceholder}
+              <label className="block text-xs font-mono font-bold uppercase tracking-widest text-mutedForeground mb-1">{t.whatsapp}</label>
+              <input type="text" className="w-full bg-background border-b-2 border-foreground py-3 px-1 text-base outline-none focus:border-b-[4px] transition-all" placeholder={t.whatsappPlaceholder}
                 value={patientInfo.whatsapp} onChange={e => setPatientInfo({ ...patientInfo, whatsapp: e.target.value })} />
             </div>
 
             {/* Drop Zone */}
             <div {...getRootProps()}
-              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${isDragActive ? 'border-[#2563eb] bg-[#2563eb]/5' : 'border-[#2a2d3e] hover:border-[#2563eb]/40'}`}>
+              className={`border-2 border-dashed p-8 text-center cursor-pointer transition-all duration-100 ${isDragActive ? 'border-foreground bg-muted' : 'border-borderLight hover:border-foreground hover:bg-muted'} group`}>
               <input {...getInputProps()} />
               {preview ? (
-                <div className="relative group">
-                  <img src={preview} alt="Preview" className="max-h-40 mx-auto rounded-lg object-contain" />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-lg transition-all">
-                    <p className="text-white text-sm font-semibold">{t.clickToChange}</p>
+                <div className="relative">
+                  <img src={preview} alt="Preview" className="max-h-40 mx-auto object-contain" />
+                  <div className="absolute inset-0 bg-foreground/90 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all duration-100">
+                    <p className="text-background text-xs font-mono uppercase tracking-wider font-bold">{t.clickToChange}</p>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div className="w-14 h-14 bg-[#2563eb]/10 text-[#2563eb] rounded-full flex items-center justify-center mx-auto">
-                    <Upload size={28} />
+                <div className="space-y-4">
+                  <div className="w-14 h-14 border border-foreground flex items-center justify-center mx-auto group-hover:bg-foreground group-hover:text-background transition-colors duration-100">
+                    <Upload size={24} strokeWidth={1.5} />
                   </div>
-                  <p className="font-semibold text-[#f1f5f9]">{t.dropFile}</p>
-                  <p className="text-xs text-gray-500">{t.dropFileHint}</p>
+                  <div>
+                    <p className="font-display font-bold text-lg">{t.dropFile}</p>
+                    <p className="text-xs text-mutedForeground mt-1 font-mono uppercase tracking-wider">{t.dropFileHint}</p>
+                  </div>
                 </div>
               )}
             </div>
 
             <button onClick={handleAnalyze} disabled={isAnalyzing || !file}
-              className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${isAnalyzing || !file ? 'bg-gray-700 cursor-not-allowed text-gray-400' : 'bg-[#2563eb] hover:bg-[#2563eb]/90 shadow-lg shadow-[#2563eb]/20 text-white'}`}>
-              {isAnalyzing ? <><Loader2 className="animate-spin" size={20} /> {t.analyzing}</> : <><Activity size={20} /> {t.runAnalysis}</>}
+              className={`w-full py-5 border-2 border-foreground font-mono uppercase tracking-widest text-xs font-bold flex items-center justify-center gap-3 transition-colors duration-100 cursor-pointer ${isAnalyzing || !file ? 'bg-muted border-borderLight text-mutedForeground cursor-not-allowed' : 'bg-foreground text-background hover:bg-background hover:text-foreground'}`}>
+              {isAnalyzing ? <><Loader2 className="animate-spin" size={16} strokeWidth={1.5} /> {t.analyzing}</> : <><Activity size={16} strokeWidth={1.5} /> {t.runAnalysis} →</>}
             </button>
           </div>
         </div>
 
         {/* Right: Results */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-7">
           <AnimatePresence mode="wait">
             {!result && (
               <motion.div key="thinking" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>

@@ -49,53 +49,54 @@ ${topClinic ? `\n🏥 Nearest: ${topClinic.name}\n📍 ${topClinic.address}` : '
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <h2 className="text-xl font-bold text-[#f1f5f9] flex items-center gap-2">
-          <MessageSquare className="text-[#25d366]" /> Share via WhatsApp
+    <div className="p-8 space-y-8 bg-background text-foreground font-body">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-borderLight pb-4">
+        <h2 className="text-xl font-display font-bold uppercase tracking-tight text-foreground flex items-center gap-2">
+          <MessageSquare className="text-foreground" size={20} strokeWidth={1.5} /> Share via WhatsApp
         </h2>
         
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto">
           <div className="relative w-full md:w-64">
-            <Phone size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Phone size={13} strokeWidth={1.5} className="absolute left-3 top-1/2 -translate-y-1/2 text-mutedForeground" />
             <input
               type="text"
               placeholder="+91 Phone Number (Optional)"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-black/40 border border-[#2a2d3e] rounded-xl py-2.5 pl-9 pr-4 text-sm text-[#f1f5f9] placeholder-gray-500 focus:outline-none focus:border-[#25d366] transition-colors"
+              className="w-full bg-background border border-foreground py-2.5 pl-9 pr-4 text-xs font-mono text-foreground placeholder-mutedForeground focus:outline-none focus:border-b-[4px] focus:border-b-foreground transition-all"
             />
           </div>
           <button
             onClick={handleShare}
-            className="flex items-center gap-2 bg-[#25d366] hover:bg-[#25d366]/90 text-black font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-[#25d366]/20 whitespace-nowrap"
+            className="flex items-center justify-center gap-2 bg-foreground text-background border-2 border-foreground hover:bg-background hover:text-foreground font-mono text-xs uppercase tracking-widest font-black px-6 py-3 transition-colors duration-100 whitespace-nowrap"
           >
-            <Send size={16} /> Send Report
+            <Send size={12} strokeWidth={1.5} /> Send Report
           </button>
         </div>
       </div>
 
-      <div className="bg-[#25d366]/10 border border-[#25d366]/20 rounded-xl p-5 flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-[#25d366]/20 flex items-center justify-center flex-shrink-0 mt-1">
-          <ExternalLink size={20} className="text-[#25d366]" />
+      <div className="border border-borderLight p-6 bg-card flex items-start gap-4">
+        <div className="w-10 h-10 border border-foreground flex items-center justify-center flex-shrink-0 mt-0.5 text-foreground bg-muted">
+          <ExternalLink size={18} strokeWidth={1.5} />
         </div>
         <div>
-          <h3 className="font-bold text-[#f1f5f9] text-sm mb-1">Direct Sharing</h3>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            Clicking the button above will open WhatsApp (Web or Mobile) and allow you to select a contact to share this summary with. You don't need to configure any APIs.
+          <h3 className="font-display font-bold text-sm uppercase tracking-tight mb-1 text-foreground">Direct Sharing</h3>
+          <p className="text-xs text-mutedForeground leading-relaxed font-body">
+            Clicking the button above will open WhatsApp (Web or Mobile) and allow you to select a contact to share this summary with. No complex API integration is required.
           </p>
         </div>
       </div>
 
       {/* Message preview */}
-      <div className="bg-black/20 border border-[#2a2d3e] rounded-xl p-5">
-        <p className="text-xs font-semibold text-gray-400 mb-3 flex items-center gap-2">
-          Message Preview
+      <div className="border-2 border-foreground p-6 bg-card">
+        <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-mutedForeground mb-4">
+          Message Plaintext Preview
         </p>
-        <div className="bg-[#25d366]/5 border border-[#25d366]/10 rounded-lg p-5 font-mono text-sm text-gray-300 whitespace-pre-line leading-relaxed selection:bg-[#25d366]/30">
+        <div className="border border-borderLight p-5 font-mono text-xs text-foreground bg-muted whitespace-pre-line leading-relaxed selection:bg-foreground selection:text-background">
           {message}
         </div>
       </div>
     </div>
   );
 }
+

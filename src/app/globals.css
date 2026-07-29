@@ -3,43 +3,161 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f1117;
-  --foreground: #f1f5f9;
+  --background: #FFFFFF;
+  --foreground: #000000;
+  --muted: #F5F5F5;
+  --muted-foreground: #525252;
+  --accent: #000000;
+  --accent-foreground: #FFFFFF;
+  --border: #000000;
+  --border-light: #E5E5E5;
+  --card: #FFFFFF;
+  --card-foreground: #000000;
+  --ring: #000000;
+}
+
+/* Zero border radius rule across all elements */
+* {
+  border-radius: 0px !important;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--background);
+  font-family: var(--font-source-serif), Georgia, serif;
+  position: relative;
+  min-height: 100vh;
 }
 
-@layer base {
-  input, select, textarea {
-    @apply bg-[#1a1d2e] border-[#2a2d3e] text-[#f1f5f9] rounded-lg focus:ring-blue focus:border-blue;
-  }
+/* Global noise overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  z-index: 9999;
 }
 
-.glass-card {
-  background: rgba(26, 29, 46, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(42, 45, 62, 0.5);
-  border-radius: 1rem;
+/* Global horizontal lines overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    #000000 3px,
+    #000000 4px
+  );
+  background-size: 100% 4px;
+  opacity: 0.015;
+  z-index: 9998;
+}
+
+/* Texture classes */
+.texture-grid {
+  background-image:
+    linear-gradient(#00000008 1px, transparent 1px),
+    linear-gradient(90deg, #00000008 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.texture-diagonal-lines {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 40px,
+    #00000008 40px,
+    #00000008 42px
+  );
+}
+
+.texture-vertical-lines-inverted {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 3px,
+    #ffffff 3px,
+    #ffffff 4px
+  );
+  background-size: 4px 100%;
+  opacity: 0.03;
+}
+
+.texture-radial-inverted {
+  background-image: radial-gradient(
+    circle at top center,
+    rgba(255, 255, 255, 0.08),
+    transparent 70%
+  );
+}
+
+/* Form resets */
+input, select, textarea {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border: 2px solid var(--border) !important;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-source-serif), Georgia, serif;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border) !important;
+  border-bottom-width: 4px !important;
+  outline: none !important;
+}
+
+/* Typography styles */
+.prose {
+  font-family: var(--font-source-serif), Georgia, serif;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--font-playfair), Georgia, serif;
+  color: var(--foreground) !important;
+}
+
+/* Custom editorial dropcap */
+.boxed-dropcap::first-letter {
+  float: left;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  font-weight: 800;
+  padding: 4px 12px;
+  margin-right: 12px;
+  margin-top: 4px;
+  border: 2px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f1117;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2a2d3e;
-  border-radius: 4px;
+  background: var(--border);
+  border: 3px solid var(--background);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3d4e;
+  background: var(--muted-foreground);
 }
+

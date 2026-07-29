@@ -2,102 +2,143 @@
 
 import { AlertTriangle, FileText, Heart, Activity } from 'lucide-react';
 import type { AnalysisResult } from '@/app/page';
-
 import { useLanguage } from '../LanguageContext';
 
 interface Props { result: AnalysisResult }
 
-const urgencyColor = (u: string) => {
-  if (u === 'EMERGENCY' || u === 'URGENT') return { bg: 'bg-[#dc2626]/20', text: 'text-[#dc2626]', border: 'border-[#dc2626]/30' };
-  if (u === 'CONSULT') return { bg: 'bg-[#d97706]/20', text: 'text-[#d97706]', border: 'border-[#d97706]/30' };
-  if (u === 'MONITOR') return { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/30' };
-  return { bg: 'bg-[#16a34a]/20', text: 'text-[#16a34a]', border: 'border-[#16a34a]/30' };
+const urgencyStyle = (u: string) => {
+  if (u === 'EMERGENCY' || u === 'URGENT') {
+    return {
+      cardClass: 'bg-foreground text-background border-2 border-foreground',
+      iconColor: 'text-background',
+      specialistClass: 'text-background underline font-bold'
+    };
+  }
+  return {
+    cardClass: 'bg-card text-foreground border-2 border-foreground',
+    iconColor: 'text-foreground',
+    specialistClass: 'text-foreground font-bold'
+  };
 };
 
-const scoreColor = (s: number) => s > 7 ? '#16a34a' : s > 4 ? '#d97706' : '#dc2626';
-
-const statusBadge = (status: string) => {
-  if (status === 'CRITICAL') return 'bg-[#dc2626]/20 text-[#dc2626]';
-  if (status === 'CONCERNING' || status === 'ABNORMAL') return 'bg-[#d97706]/20 text-[#d97706]';
-  return 'bg-[#16a34a]/20 text-[#16a34a]';
+const statusBadgeClass = (status: string) => {
+  if (status === 'CRITICAL') {
+    return 'border border-foreground bg-foreground text-background font-bold';
+  }
+  if (status === 'CONCERNING' || status === 'ABNORMAL') {
+    return 'border border-foreground bg-card text-foreground font-bold';
+  }
+  return 'border border-borderLight bg-muted text-mutedForeground';
 };
 
 export function OverviewTab({ result }: Props) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { analysis } = result;
-  const uc = urgencyColor(analysis.urgency);
+  const us = urgencyStyle(analysis.urgency);
   const circ = 2 * Math.PI * 58;
 
+  // Split summary for boxed drop cap
+  const summaryText = analysis.executiveSummary || "";
+  const firstLetter = summaryText.charAt(0);
+  const restOfText = summaryText.slice(1);
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-8 space-y-10 bg-background text-foreground font-body">
       {/* Score + Urgency Row */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Health Score */}
-        <div className="bg-black/20 border border-[#2a2d3e] rounded-xl p-6 flex flex-col items-center justify-center">
-          <div className="relative w-28 h-28 mb-3">
+        <div className="border-2 border-foreground p-8 flex flex-col items-center justify-center bg-card relative">
+          <div className="relative w-28 h-28 mb-4">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 128 128">
-              <circle cx="64" cy="64" r="58" strokeWidth="8" fill="none" stroke="#2a2d3e" />
+              <circle cx="64" cy="64" r="58" strokeWidth="6" fill="none" stroke="var(--border-light)" />
               <circle
                 cx="64" cy="64" r="58" strokeWidth="8" fill="none"
-                stroke={scoreColor(analysis.healthScore)}
+                stroke="var(--border)"
                 strokeDasharray={circ}
                 strokeDashoffset={circ * (1 - analysis.healthScore / 10)}
-                strokeLinecap="round"
+                strokeLinecap="square"
                 style={{ transition: 'stroke-dashoffset 1s ease' }}
               />
             </svg>
-            <span className="absolute inset-0 flex items-center justify-center text-3xl font-black text-[#f1f5f9]">
+            <span className="absolute inset-0 flex items-center justify-center text-4xl font-display font-black text-foreground">
               {analysis.healthScore}
             </span>
           </div>
-          <p className="font-bold text-[#f1f5f9]">{t.healthScore}</p>
-          <p className="text-xs text-gray-500">{t.outOf10}</p>
+          <p className="font-display font-bold uppercase tracking-wider text-sm">{t.healthScore}</p>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-mutedForeground mt-0.5">{t.outOf10}</p>
         </div>
 
         {/* Urgency */}
-        <div className={`${uc.bg} border ${uc.border} rounded-xl p-6 flex flex-col items-center justify-center`}>
-          <AlertTriangle size={40} className={`${uc.text} mb-3`} />
-          <p className={`text-2xl font-black ${uc.text}`}>{analysis.urgency}</p>
-          <p className="text-xs text-gray-400 mt-1">{t.urgencyLevel}</p>
-          <p className="text-xs text-gray-500 mt-2 text-center">{t.seeSpecialist} <span className="font-semibold text-[#f1f5f9]">{analysis.specialistNeeded}</span></p>
+        <div className={`${us.cardClass} p-8 flex flex-col items-center justify-center relative overflow-hidden`}>
+          {analysis.urgency === 'EMERGENCY' || analysis.urgency === 'URGENT' ? (
+            <div className="absolute inset-0 texture-vertical-lines-inverted opacity-10 pointer-events-none" />
+          ) : null}
+          <AlertTriangle size={36} strokeWidth={1.5} className={`${us.iconColor} mb-4 relative z-10`} />
+          <p className="text-3xl font-display font-black uppercase tracking-wider relative z-10">{analysis.urgency}</p>
+          <p className="text-[10px] font-mono uppercase tracking-widest mt-1 opacity-80 relative z-10">{t.urgencyLevel}</p>
+          <p className="text-xs font-mono uppercase tracking-wider mt-4 text-center relative z-10">
+            {t.seeSpecialist} <span className={us.specialistClass}>{analysis.specialistNeeded}</span>
+          </p>
         </div>
       </div>
 
-      {/* Document type badge */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className="bg-[#2563eb]/10 text-[#2563eb] border border-[#2563eb]/20 px-3 py-1 rounded-full font-medium">
+      {/* Document type badges */}
+      <div className="flex flex-wrap gap-2 pt-2 border-b border-borderLight pb-6">
+        <span className="border-2 border-foreground bg-foreground text-background px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider">
           {result.documentType}
         </span>
         {result.isImagingScan && (
-          <span className="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-medium">
+          <span className="border border-foreground bg-card text-foreground px-3 py-1 font-mono text-[10px] uppercase tracking-wider">
             {t.imagingScan}
           </span>
         )}
       </div>
 
-      {/* Executive Summary */}
-      <div className="bg-black/20 border border-[#2a2d3e] rounded-xl p-5">
-        <h3 className="font-bold text-[#f1f5f9] flex items-center gap-2 mb-3">
-          <FileText size={16} className="text-[#2563eb]" /> {t.executiveSummary}
+      {/* Executive Summary with Boxed Drop Cap */}
+      <div className="border border-foreground p-8 bg-card relative">
+        <h3 className="font-display font-bold text-lg uppercase tracking-tight flex items-center gap-2 mb-6 text-foreground">
+          <FileText size={18} strokeWidth={1.5} className="text-foreground" />
+          {t.executiveSummary}
         </h3>
-        <p className="text-gray-300 leading-relaxed text-sm">{analysis.executiveSummary}</p>
+        {summaryText ? (
+          <p className="text-foreground leading-relaxed text-base font-body">
+            <span className="boxed-dropcap">{firstLetter}</span>
+            {restOfText}
+          </p>
+        ) : (
+          <p className="text-mutedForeground text-sm italic font-body">No summary available.</p>
+        )}
+      </div>
+
+      {/* Editorial Pull Quote Testimonial */}
+      <div className="border-y-2 border-foreground py-8 my-8 text-center bg-card">
+        <span className="font-display font-black text-6xl text-mutedForeground/10 leading-none select-none block -mb-4">“</span>
+        <p className="font-display italic text-lg md:text-xl text-foreground max-w-lg mx-auto leading-relaxed px-4">
+          {language === 'English' ? '"HealthScan AI provides clear editorial structure, parsing dense lab results into a pristine, readable summary."' : 
+           language === 'Hindi' ? '"HealthScan AI जटिल लैब परिणामों को एक स्पष्ट, पठनीय सारांश में बदल देता है।"' :
+           '"HealthScan AI জটিল ল্যাব ফলাফলগুলিকে একটি স্পষ্ট, পঠনযোগ্য সারসংক্ষেপে রূপান্তর করে।"'}
+        </p>
+        <p className="font-mono text-[9px] uppercase tracking-widest text-mutedForeground mt-4 font-bold">— Dr. A. Sen, Cardiologist</p>
       </div>
 
       {/* Key Findings */}
       {analysis.keyFindings?.length > 0 && (
-        <div>
-          <h3 className="font-bold text-[#f1f5f9] flex items-center gap-2 mb-3">
-            <Activity size={16} className="text-[#2563eb]" /> {t.keyFindings}
+        <div className="space-y-4">
+          <h3 className="font-display font-bold text-lg uppercase tracking-tight flex items-center gap-2 text-foreground mb-4">
+            <Activity size={18} strokeWidth={1.5} className="text-foreground" />
+            {t.keyFindings}
           </h3>
-          <div className="space-y-2">
+          <div className="divide-y divide-borderLight border-t border-b border-borderLight">
             {analysis.keyFindings.map((f, i) => (
-              <div key={i} className="bg-black/20 border border-[#2a2d3e] rounded-lg p-4 flex items-start gap-3">
-                <span className={`${statusBadge(f.status)} text-xs font-bold px-2 py-1 rounded flex-shrink-0 mt-0.5`}>
+              <div key={i} className="py-5 flex flex-col sm:flex-row items-start gap-4">
+                <span className={`${statusBadgeClass(f.status)} text-[9px] font-mono font-bold px-2 py-1 uppercase tracking-wider flex-shrink-0 sm:mt-0.5`}>
                   {f.status}
                 </span>
                 <div>
-                  <p className="font-semibold text-[#f1f5f9] text-sm">{f.name} — <span className="text-gray-300">{f.what}</span></p>
-                  <p className="text-gray-400 text-xs mt-1">{f.explanation}</p>
+                  <p className="font-display font-bold text-foreground text-sm uppercase tracking-tight">
+                    {f.name} <span className="text-mutedForeground font-normal font-body italic lowercase"> — {f.what}</span>
+                  </p>
+                  <p className="text-mutedForeground text-xs font-body mt-2 leading-relaxed">{f.explanation}</p>
                 </div>
               </div>
             ))}
@@ -107,18 +148,23 @@ export function OverviewTab({ result }: Props) {
 
       {/* Conditions */}
       {analysis.conditionsDetected?.length > 0 && (
-        <div>
-          <h3 className="font-bold text-[#f1f5f9] flex items-center gap-2 mb-3">
-            <Heart size={16} className="text-[#dc2626]" /> {t.conditionsDetected}
+        <div className="space-y-4">
+          <h3 className="font-display font-bold text-lg uppercase tracking-tight flex items-center gap-2 text-foreground mb-4">
+            <Heart size={18} strokeWidth={1.5} className="text-foreground" />
+            {t.conditionsDetected}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {analysis.conditionsDetected.map((c, i) => (
-              <div key={i} className="bg-black/20 border border-[#2a2d3e] rounded-lg p-4">
-                <div className="flex justify-between items-start mb-1">
-                  <p className="font-semibold text-[#f1f5f9] text-sm">{c.name}</p>
-                  <span className="text-[10px] bg-[#d97706]/10 text-[#d97706] px-2 py-0.5 rounded font-bold">{c.confidence}</span>
+              <div key={i} className="border border-borderLight bg-card p-6 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-3 gap-2">
+                    <p className="font-display font-bold text-foreground text-sm uppercase tracking-tight">{c.name}</p>
+                    <span className="text-[9px] font-mono uppercase tracking-widest bg-muted border border-borderLight px-2 py-0.5 text-mutedForeground font-bold">
+                      {c.confidence}
+                    </span>
+                  </div>
+                  <p className="text-mutedForeground text-xs leading-relaxed font-body">{c.explanation}</p>
                 </div>
-                <p className="text-gray-400 text-xs">{c.explanation}</p>
               </div>
             ))}
           </div>
@@ -127,18 +173,23 @@ export function OverviewTab({ result }: Props) {
 
       {/* Warning Signs */}
       {analysis.warningSignsGoToER?.length > 0 && (
-        <div className="bg-[#dc2626]/5 border border-[#dc2626]/20 rounded-xl p-5">
-          <h3 className="font-bold text-[#dc2626] mb-3">{t.goToERIf}</h3>
-          <ul className="space-y-1">
-            {analysis.warningSignsGoToER.map((s, i) => (
-              <li key={i} className="text-sm text-gray-300 flex items-center gap-2">
-                <span className="text-[#dc2626]">•</span> {s}
-              </li>
-            ))}
-          </ul>
-          <p className="text-xs text-[#dc2626] font-bold mt-3">{t.callFreeAmbulance}</p>
+        <div className="bg-foreground text-background p-8 relative overflow-hidden border-2 border-foreground">
+          <div className="absolute inset-0 texture-vertical-lines-inverted opacity-10 pointer-events-none" />
+          <div className="relative z-10 space-y-4">
+            <h3 className="font-display font-black text-xl uppercase tracking-wider text-background">{t.goToERIf}</h3>
+            <ul className="space-y-3 font-mono text-xs uppercase tracking-wide opacity-90">
+              {analysis.warningSignsGoToER.map((s, i) => (
+                <li key={i} className="flex items-start gap-2.5">
+                  <span className="flex-shrink-0 mt-0.5">•</span>
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-xs font-mono font-bold tracking-widest text-background pt-2 border-t border-background/25">{t.callFreeAmbulance}</p>
+          </div>
         </div>
       )}
     </div>
   );
 }
+

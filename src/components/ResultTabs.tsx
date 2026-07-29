@@ -31,27 +31,27 @@ export function ResultTabs({ result, preview, patientInfo }: Props) {
   ];
 
   return (
-    <div className="glass-card overflow-hidden">
+    <div className="border-2 border-foreground bg-card overflow-hidden">
       {/* Tab Bar */}
-      <div className="flex border-b border-[#2a2d3e] overflow-x-auto">
+      <div className="flex border-b border-foreground bg-muted overflow-x-auto">
         {TABS.map(({ id, label, Icon }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-2 px-5 py-4 text-sm font-semibold whitespace-nowrap transition-all border-b-2 flex-shrink-0 ${
+            className={`flex items-center gap-2 px-6 py-4 text-xs font-mono font-bold uppercase tracking-wider whitespace-nowrap transition-colors duration-100 border-r border-borderLight flex-shrink-0 ${
               activeTab === id
-                ? 'border-[#2563eb] text-[#2563eb] bg-[#2563eb]/5'
-                : 'border-transparent text-gray-400 hover:text-white'
+                ? 'bg-foreground text-background border-r-foreground'
+                : 'text-foreground hover:bg-background'
             }`}
           >
-            <Icon size={15} />
+            <Icon size={14} strokeWidth={1.5} />
             {label}
           </button>
         ))}
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[600px]">
+      <div className="min-h-[600px] bg-background">
         {activeTab === 'overview' && <OverviewTab result={result} />}
         {activeTab === 'report'   && <ReportTab result={result} patientInfo={patientInfo} />}
         {activeTab === 'images'   && <ImagesTab result={result} preview={preview} />}
@@ -62,3 +62,4 @@ export function ResultTabs({ result, preview, patientInfo }: Props) {
     </div>
   );
 }
+
